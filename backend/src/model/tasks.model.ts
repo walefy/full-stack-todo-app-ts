@@ -23,3 +23,14 @@ export const createTask = async (taskName: string) => {
 
   return result.rows[0];
 };
+
+export const getTaskById = async (taskId: string) => {
+  const result = await connection.query(`
+    SELECT * FROM tasks WHERE task_id = $1`,
+    [taskId]
+  );
+
+  if (result.rows.length === 0) return {};
+
+  return result.rows[0];
+};
