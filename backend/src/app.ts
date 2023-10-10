@@ -1,11 +1,9 @@
 import express from 'express';
+import { routes } from './routes';
 
 const app = express();
 
 app.use(express.json());
-
-app.get('/', (_req, res) => {
-  res.status(200).send({ message: 'Hello World' });
-});
+app.use(routes);
 
 export default app;
