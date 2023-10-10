@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { taskWithoutId } from '../types';
-import * as taskModel from '../model/tasks.model'
+import { validateBody, validateParams } from '../middlewares/validateBody';
+import * as taskModel from '../models/tasks.model';
+import * as taskSchema from '../schemas/task.schema';
 
 export const taskRouter = Router();
 
@@ -9,7 +10,7 @@ taskRouter.get('/', async (_req, res) => {
   res.status(200).send(tasks);
 });
 
-taskRouter.post('/', async (req, res) => {
+taskRouter.post('/', validateBody(taskSchema.createTaskSchemaBody), async (req, res) => {
   const { taskName } = req.body;
 
   if (!taskName) {
@@ -20,21 +21,25 @@ taskRouter.post('/', async (req, res) => {
   return res.status(201).send(result);
 });
 
-taskRouter.get('/:id', async (req, res) => {
+taskRouter.get('/:id', validateParams(taskSchema.taskParamsId), async (req, res) => {
   const { id } = req.params;
   const task = await taskModel.getTaskById(id);
   res.status(200).send(task);
 });
 
-taskRouter.put('/:id', async (req, res) => {
-  const { id } = req.params;
+taskRouter.put(
+  '/:id',
+  validateBody(taskSchema.updateTaskSchemaBody),
+  validateParams(taskSchema.taskParamsId),
+  async (req, res) => {
+    const { id } = req.params;
 
-  const task = { ...req.body };
-  const isUpdated = await taskModel.updateTaskById(id, task);
+    const task = { ...req.body };
+    const isUpdated = await taskModel.updateTaskById(id, task);
 
-  if (!isUpdated) {
-    return res.status(400).send({ message: 'failed update' });
-  }
+    if (!isUpdated) {
+      return res.status(400).send({ message: 'failed update' });
+    }
 
-  return res.status(200).send({ message: 'success update'});
+    return res.status(200).send({ message: 'success update'});
 });
