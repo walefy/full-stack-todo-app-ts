@@ -27,7 +27,7 @@ taskRouter.get('/:id', validateParams(taskSchema.taskParamsId), async (req, res)
   res.status(200).send(task);
 });
 
-taskRouter.put(
+taskRouter.patch(
   '/:id',
   validateBody(taskSchema.updateTaskSchemaBody),
   validateParams(taskSchema.taskParamsId),
